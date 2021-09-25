@@ -1,0 +1,17 @@
+.idea/
+venv
+__pycache__
+node_modules/
+/orienti_api.egg-info/
+/logs/
+!logs/.gitkeep
+/media/*
+!/media/.gitkeep
+*.DS_Store
+*.pyc
+*.pyo
+*.log
+*.mwb.bak
+.env
+*.xd
+~*.docx
