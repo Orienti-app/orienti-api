@@ -6,6 +6,7 @@ from django.db import models
 from apps.core.managers.user import UserManager
 
 from apps.core.models.base import BaseModel, UpdatedAtMixin
+from apps.core.models.team import Team
 
 
 class User(BaseModel, UpdatedAtMixin, AbstractBaseUser, PermissionsMixin):
@@ -15,6 +16,7 @@ class User(BaseModel, UpdatedAtMixin, AbstractBaseUser, PermissionsMixin):
         default_permissions = ('add', 'delete')
 
     # Basic info
+    team = models.ForeignKey(Team, on_delete=models.CASCADE, null=True, related_name='users')
     email = models.EmailField(null=False, unique=True, verbose_name=_('user_email'))
     name = models.CharField(null=False, max_length=30, verbose_name=_('user_name'))
     surname = models.CharField(null=False, max_length=150, verbose_name=_('user_surname'))

@@ -20,4 +20,4 @@ To set up instance with demo database follow these simple steps:
 6. Create superuser using `python manage.py createsuperuser`
 
 ---
-Made with ❤️ ☕ & 🍺️ Orienti.app team
+Made with ❤️ ☕ 🍺️ Orienti.app team

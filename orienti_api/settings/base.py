@@ -126,7 +126,8 @@ PASSWORD_HASHERS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    'apps.core.auth.BearerBackend'
+    'apps.core.auth.BearerBackend',
+    'apps.core.auth.BasicBackend',
 ]
 
 AUTH_USER_MODEL = "core.User"
