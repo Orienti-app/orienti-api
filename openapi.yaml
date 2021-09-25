@@ -7,9 +7,9 @@ servers:
   - url: https://orienti.app/api/v1
     description: Production
   - url: https://orienti.jakubdubec.me/api/v1
-    description: Staging test server
+    description: Staging
   - url: http://127.0.0.1:8000/api/v1
-    description: Local development server
+    description: Local development
 tags:
 - name: "Token"
 - name: "Sync"
@@ -230,18 +230,24 @@ components:
       content:
         application/json:
           schema:
-            allOf:
-              - $ref: '#/components/schemas/SyncForm'
-              - type: object
-                properties:
-                  user:
-                    $ref: '#/components/schemas/User'
+            type: object
+            properties:
+              response:
+                allOf:
+                  - $ref: '#/components/schemas/SyncForm'
+                  - type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
     TokenResponse:
       description: Token created response
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Token'
+            type: object
+            properties:
+              response:
+                $ref: '#/components/schemas/Token'
     ValidationResponse:
       description: Validation error
       content:
@@ -251,3 +257,4 @@ components:
 security:
   - tokenAuth: []
   - basicAuth: []
+
