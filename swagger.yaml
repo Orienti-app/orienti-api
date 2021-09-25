@@ -1,0 +1,253 @@
+openapi: 3.0.0
+info:
+  title: OrientAPI
+  description: OpenAPI definition to documentation for the Orient RESTful API.
+  version: 1.0.0
+servers:
+  - url: https://orienti.app/api/v1
+    description: Production
+  - url: https://orienti.jakubdubec.me/api/v1
+    description: Staging test server
+  - url: http://127.0.0.1:8000/api/v1
+    description: Local development server
+tags:
+- name: "Token"
+- name: "Sync"
+paths:
+  /v1/sync/:
+    post:
+      tags:
+        - "Sync"
+      summary: Endpoint for bi-directional data sync
+      requestBody:
+        $ref: "#/components/requestBodies/SyncBody"
+      responses:
+        '200':
+          $ref: '#/components/responses/SyncResponse'
+        '422':
+          $ref: '#/components/responses/ValidationResponse'
+  /v1/token/:
+    post:
+      tags:
+        - "Token"
+      summary: Token auth
+      requestBody:
+        $ref: "#/components/requestBodies/TokenBody"
+      responses:
+        '200':
+          $ref: '#/components/responses/TokenResponse'
+        '422':
+          $ref: '#/components/responses/ValidationResponse'
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    tokenAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    User:
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'a7ab1cb3-e112-4ad5-821a-901245c10e37'
+        team_id:
+          type: string
+          format: uuid
+          example: 'e45b9e2c-ae63-4539-a9d5-46f3cc925f13'
+        name:
+          type: string
+          example: 'Arthur'
+        surname:
+          type: string
+          example: 'Dent'
+        email:
+          type: string
+          format: email
+          example: 'arthur.dent@orienti.app'
+    TokenForm:
+      properties:
+        username:
+          type: string
+          format: email
+          example: 'arthur.dent@orienti.app'
+        password:
+          type: string
+          example: 'SuperPassword'
+    Token:
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'ef8fe98e-f679-4322-ba20-e104cd35e4a3'
+        user:
+          $ref: '#/components/schemas/User'
+        expire_at:
+          type: string
+          format: date-time
+          example: '2021-09-21T04:12Z'
+    Error:
+      properties:
+        message:
+          type: string
+        trace:
+          type: string
+          description: This property is present only in debug mode
+    ControlPointDefinition:
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '6cae0471-abfe-4f66-ab68-43ffa858d858'
+        code:
+          type: string
+          example: '22'
+        description:
+          type: string
+          example: 'Under the bridge'
+          nullable: true
+    ControlPointInstance:
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '6cae0471-abfe-4f66-ab68-43ffa858d858'
+        timestamp:
+          type: string
+          format: date-time
+          example: '2021-09-21T04:12Z'
+    Route:
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '46dd85d8-86ef-498b-a23c-e2f7a317741f'
+        control_points:
+          type: array
+          items:
+            type: string
+            format: uuid
+            example: '6cae0471-abfe-4f66-ab68-43ffa858d858'
+          uniqueItems: true
+    Runner:
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'c64e8906-8b4e-46ad-97d0-a820edf8b25c'
+        name:
+          type: string
+          example: Arthur Dent
+    Run:
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'b054cf51-2d9a-45be-b223-3beb92c37361'
+        route_id:
+          type: string
+          format: uuid
+          example: '07460e19-5698-42fb-8deb-af0132ce79af'
+        started_at:
+          type: string
+          format: date-time
+          example: '2021-09-21T04:12Z'
+          description: 'Timestamp triggered by scanning START control point'
+        finished_at:
+          type: string
+          format: date-time
+          example: '2021-09-21T04:12Z'
+          description: 'Timestamp triggered by scanning FINISH control point'
+        runner:
+          $ref: "#/components/schemas/Runner"
+        check_points:
+          type: array
+          items:
+            $ref: '#/components/schemas/ControlPointInstance'
+          uniqueItems: true
+    Training:
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: '62b19dd8-8165-464e-978f-5cef1b6c34fa'
+        name:
+          type: string
+          example: 'California dreaming'
+        created_at:
+          type: string
+          format: date-time
+          example: '2021-09-21T04:12Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2021-09-21T04:12Z'
+        runs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Run'
+          uniqueItems: true
+    SyncForm:
+      properties:
+        control_points:
+          type: array
+          items:
+            $ref: '#/components/schemas/ControlPointDefinition'
+        routes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Route'
+        trainings:
+          type: array
+          items:
+            $ref: '#/components/schemas/Training'
+    Validation:
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+  requestBodies:
+    SyncBody:
+      description: A JSON object containing sync information
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SyncForm'
+    TokenBody:
+      description: Create token request
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TokenForm'
+  responses:
+    SyncResponse:
+      description: Succesfull sync response object
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/SyncForm'
+              - type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+    TokenResponse:
+      description: Token created response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Token'
+    ValidationResponse:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Validation'
+security:
+  - tokenAuth: []
+  - basicAuth: []
